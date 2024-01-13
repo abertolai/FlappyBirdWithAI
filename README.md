@@ -62,9 +62,35 @@ O NEAT funciona da seguinte forma:
 
 Os pássaros são representados por um conjunto de genes, que determinam suas características, como:
 
-•A altura do salto
-•A velocidade de voo
+•A altura do salto    
+•A velocidade de voo   
 •A sensibilidade ao controle do jogador
+
+## Como rodar a aplicação
+
+### Pré-requisito
+
+•*Python:* Certifique-se de ter o Python versão 3.6 ou posterior instalado na sua máquina.
+
+•*Pygame:* Instale o Pygame usando o comando
+<code>*pip install pygame*</code>
+
+•*NEAT:* Instale o NEAT-Python usando o comando
+<code>*pip install neat-python*</code>
+
+### Executando o jogo
+
+1. Abra um terminal ou prompt de comando.
+2. Navegue até o diretório onde o arquivo *main.py* está localizado.
+3. Escolha como deseja jogar:
+   1. IA jogando:  
+      • Execute o comando <code>*python main.py*</code>  
+      • A inteligência artificial controlará as ações do pássaro.  
+      • Você observará o progresso da IA enquanto ela aprende a jogar.
+   2. Humano jogando:  
+      • Altere a variável **ai_playing** para **False** dentro do arquivo *main.py*.  
+      • Execute o comando <code>*python main.py*</code>  
+      • Use a barra de espaço para controlar os saltos do pássaro.
 
 ## Conclusão
 
