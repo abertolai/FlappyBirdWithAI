@@ -21,10 +21,6 @@ BACKGROUND_IMAGE = pygame.transform.scale2x(pygame.image.load(os.path.join('../i
 pygame.font.init()
 POINTS_FONT = pygame.font.SysFont('comicsans', 40)
 
-# Função para carregar imagens
-def load_image(nome, scale):
-    return pygame.transform.scale2x(pygame.image.load(os.path.join('imgs', nome)))
-
 def draw_screen(screen, birds, pipes, ground, points):
     screen.blit(BACKGROUND_IMAGE, (0, 0))
 
