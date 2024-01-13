@@ -1,83 +1,83 @@
 import pygame
 import os
 
-IMAGENS_PASSARO = [
+BIRD_IMAGES = [
     pygame.transform.scale2x(pygame.image.load(os.path.join('../imgs','bird1.png'))),
     pygame.transform.scale2x(pygame.image.load(os.path.join('../imgs','bird2.png'))),
     pygame.transform.scale2x(pygame.image.load(os.path.join('../imgs','bird3.png')))
 ]
 
-class Passaro:
-    IMGS = IMAGENS_PASSARO
+class Bird:
+    IMGS = BIRD_IMAGES
 
     #animações da rotação
-    ROTACAO_MAXIMA = 25
-    VELOCIDADE_ROTACAO = 20
-    TEMPO_ANIMACAO = 5
+    MAX_ROTATION = 25
+    SPEED_ROTATION = 20
+    ANIMATION_TIME = 5
 
     #atributos do passáro
     def __init__(self, x, y):
         self.x = x
         self.y = y
-        self.angulo = 0
-        self.velocidade = 0
-        self.altura = self.y
-        self.tempo = 0
-        self.contagem_imagem = 0
-        self.imagem = self.IMGS[0]
+        self.angle = 0
+        self.speed = 0
+        self.height = self.y
+        self.time = 0
+        self.image_count = 0
+        self.image = self.IMGS[0]
 
-    def pular(self):
-        self.velocidade = -10.5
-        self.tempo = 0
-        self.altura = self.y
+    def jump(self):
+        self.speed = -10.5
+        self.time = 0
+        self.height = self.y
 
-    def mover(self):
+    def move(self):
         #calcular o deslocamento
-        self.tempo += 1
-        deslocamento = 1.5 * (self.tempo ** 2) + self.velocidade * self.tempo
+        self.time += 1
+        displacement = 1.5 * (self.time ** 2) + self.speed * self.time
 
         #restringir o deslocamento
-        if deslocamento > 16:
-            deslocamento = 16
-        elif deslocamento < 0:
-            deslocamento -=2
+        if displacement > 16:
+            displacement = 16
+        elif displacement < 0:
+            displacement -=2
 
-        self.y += deslocamento
+        self.y += displacement
 
         #angulo do passaro (para fazer a animação)
-        if deslocamento < 0 or self.y < (self.altura + 50):
-            if self.angulo < self.ROTACAO_MAXIMA:
-                self.angulo = self.ROTACAO_MAXIMA
+        if displacement < 0 or self.y < (self.height + 50):
+            if self.angle < self.MAX_ROTATION:
+                self.angle = self.MAX_ROTATION
             else:
-                if self.angulo > -90:
-                    self.angulo -= self.VELOCIDADE_ROTACAO
+                if self.angle > -90:
+                    self.angle -= self.SPEED_ROTATION
 
-    def desenhar(self, tela):
+    def draw(self, screen):
         #definir qual image do passaro vai usar
-        self.contagem_imagem += 1
-        if self.contagem_imagem < self.TEMPO_ANIMACAO:
-            self.imagem = self.IMGS[0]
-        elif self.contagem_imagem < self.TEMPO_ANIMACAO * 2:
-            self.imagem = self.IMGS[1]
-        elif self.contagem_imagem < self.TEMPO_ANIMACAO * 3:
-            self.imagem = self.IMGS[2]
-        elif self.contagem_imagem < self.TEMPO_ANIMACAO * 4:
-            self.imagem = self.IMGS[1]
-        elif self.contagem_imagem >= self.TEMPO_ANIMACAO * 4 + 1:
-            self.imagem = self.IMGS[0]
-            self.contagem_imagem = 0
+        self.image_count += 1
+        if self.image_count < self.ANIMATION_TIME:
+            self.image = self.IMGS[0]
+        elif self.image_count < self.ANIMATION_TIME * 2:
+            self.image = self.IMGS[1]
+        elif self.image_count < self.ANIMATION_TIME * 3:
+            self.image = self.IMGS[2]
+        elif self.image_count < self.ANIMATION_TIME * 4:
+            self.image = self.IMGS[1]
+        elif self.image_count >= self.ANIMATION_TIME * 4 + 1:
+            self.image = self.IMGS[0]
+            self.image_count = 0
 
         #se o passaro estiver caindo eu não vou bater asas
-        if self.angulo <= -80:
-            self.imagem = self.IMGS[1]
-            self.contagem_imagem = self.TEMPO_ANIMACAO * 2
+        if self.angle <= -80:
+            self.image = self.IMGS[1]
+            self.image_count = self.ANIMATION_TIME * 2
 
         #desenhar a imagem
-        imagem_rotacionada = pygame.transform.rotate(self.imagem, self.angulo)
-        pos_centro_imagem = self.imagem.get_rect(topleft=(self.x, self.y)).center
-        retangulo = imagem_rotacionada.get_rect(center=pos_centro_imagem)
-        tela.blit(imagem_rotacionada, retangulo.topleft)
+        rotated_image = pygame.transform.rotate(self.image, self.angle)
+        position_center_image = self.image.get_rect(topleft=(self.x, self.y)).center
+        rectangle = rotated_image.get_rect(center=position_center_image)
+        screen.blit(rotated_image, rectangle.topleft)
 
     def get_mask(self):
         #pegando a mascara do pássaro (ele divide a imagem em vários retangulos menores (pixels))
-        return pygame.mask.from_surface(self.imagem)
+        return pygame.mask.from_surface(self.image)

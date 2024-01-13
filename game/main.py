@@ -1,159 +1,160 @@
 import neat
 import pygame
 import os
-from game.bird import Passaro
-from game.pipe import Cano
-from game.ground import Chao
+from game.bird import Bird
+from game.pipe import Pipe
+from game.ground import Ground
 
-ai_jogando = True
-geracao = 0
+ai_playing = True
+generation = 0
 
 # Constantes
-TELA_LARGURA = 500
-TELA_ALTURA = 800
+WIDTH_SCREEN = 500
+HEIGHT_SCREEN = 800
+FPS = 30
 
 # Inicialização do pygame
 pygame.init()
-IMAGEM_BACKGROUND = pygame.transform.scale2x(pygame.image.load(os.path.join('../imgs', 'bg.png')))
+BACKGROUND_IMAGE = pygame.transform.scale2x(pygame.image.load(os.path.join('../imgs', 'bg.png')))
 
 # Fonte
 pygame.font.init()
-FONTE_PONTOS = pygame.font.SysFont('comicsans', 40)
+POINTS_FONT = pygame.font.SysFont('comicsans', 40)
 
 # Função para carregar imagens
-def carregar_imagem(nome, escala):
+def load_image(nome, scale):
     return pygame.transform.scale2x(pygame.image.load(os.path.join('imgs', nome)))
 
-def desenhar_tela(tela, passaros, canos, chao, pontos):
-    tela.blit(IMAGEM_BACKGROUND, (0, 0))
+def draw_screen(screen, birds, pipes, ground, points):
+    screen.blit(BACKGROUND_IMAGE, (0, 0))
 
-    for passaro in passaros:
-        passaro.desenhar(tela)
+    for bird in birds:
+        bird.draw(screen)
 
-    for cano in canos:
-        cano.desenhar(tela)
-    texto = FONTE_PONTOS.render(f"Pontuação: {pontos}", 1, (255, 255, 255))
-    tela.blit(texto, (TELA_LARGURA - 10 - texto.get_width(), 10))
+    for pipe in pipes:
+        pipe.draw(screen)
+    text = POINTS_FONT.render(f"Pontuação: {points}", 1, (255, 255, 255))
+    screen.blit(text, (WIDTH_SCREEN - 10 - text.get_width(), 10))
 
-    if ai_jogando:
-        texto = FONTE_PONTOS.render(f"Geração: {geracao}", 1, (255, 255, 255))
-        tela.blit(texto, (10, 10))
-    chao.desenhar(tela)
+    if ai_playing:
+        text = POINTS_FONT.render(f"Geração: {generation}", 1, (255, 255, 255))
+        screen.blit(text, (10, 10))
+    ground.draw(screen)
     pygame.display.update()
 
-def main(genomas, config): #fitness function -> precisa dizer qual passaro esta indo melhor ou pior
-    global geracao
-    geracao += 1
+def main(genomas, config): #fitness function -> precisa dizer qual bird esta indo melhor ou pior
+    global generation
+    generation += 1
 
-    if ai_jogando:
-        redes_neurais = []
-        lista_genomas = []
-        passaros = []
+    if ai_playing:
+        neural_networks = []
+        list_genomas = []
+        birds = []
 
         for _, genoma in genomas:
             rede_neural = neat.nn.FeedForwardNetwork.create(genoma, config)
-            redes_neurais.append(rede_neural)
+            neural_networks.append(rede_neural)
             genoma.fitness = 0
-            lista_genomas.append(genoma)
-            passaros.append(Passaro(230, 350))
+            list_genomas.append(genoma)
+            birds.append(Bird(230, 350))
     else:
-        passaros = [Passaro(230, 350)]
-    chao = Chao(730)
-    canos = [Cano(700)]
-    tela = pygame.display.set_mode((TELA_LARGURA, TELA_ALTURA))
-    pontos = 0
-    relogio = pygame.time.Clock()
+        birds = [Bird(230, 350)]
+    ground = Ground(730)
+    pipes = [Pipe(700)]
+    screen = pygame.display.set_mode((WIDTH_SCREEN, HEIGHT_SCREEN))
+    points = 0
+    clock = pygame.time.Clock()
 
-    rodando = True
-    while rodando:
-        relogio.tick(30)
+    running = True
+    while running:
+        clock.tick(30)
 
         #interação com o usuário
-        for evento in pygame.event.get():
-            if evento.type == pygame.QUIT:
-                rodando = False
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
                 pygame.quit()
                 quit()
-            if not ai_jogando:
-                if evento.type == pygame.KEYDOWN:
-                    if evento.key == pygame.K_SPACE:
-                        for passaro in passaros:
-                            passaro.pular()
+            if not ai_playing:
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_SPACE:
+                        for bird in birds:
+                            bird.jump()
 
-        indice_cano = 0
-        if len(passaros) > 0:
-            #descobrir qual cano olhar
-            if len(canos) > 1 and passaros[0].x > (canos[0].x + canos[0].CANO_TOPO.get_width()):
-                indice_cano = 1
+        index_pipe = 0
+        if len(birds) > 0:
+            #descobrir qual pipe olhar
+            if len(pipes) > 1 and birds[0].x > (pipes[0].x + pipes[0].PIPE_TOP.get_width()):
+                index_pipe = 1
         else:
-            rodando = False
+            running = False
             break
 
         #mover as coisas
-        for i, passaro in enumerate(passaros):
-            passaro.mover()
-            #aumentar um pouquinho a fitness do passaro
-            lista_genomas[i].fitness += 0.1
-            output = redes_neurais[i].activate((passaro.y,
-                                                abs(passaro.y - canos[indice_cano].altura),
-                                                abs(passaro.y - canos[indice_cano].pos_base))) #ativa a rede neural
-            # -1 e 1 -> se o output for > 0.5 então o passaro pula
+        for i, bird in enumerate(birds):
+            bird.move()
+            #aumentar um pouquinho a fitness do bird
+            list_genomas[i].fitness += 0.1
+            output = neural_networks[i].activate((bird.y,
+                                                abs(bird.y - pipes[index_pipe].height),
+                                                abs(bird.y - pipes[index_pipe].pos_base))) #ativa a rede neural
+            # -1 e 1 -> se o output for > 0.5 então o bird pula
             if output[0] > 0.5:
-                passaro.pular()
-        chao.mover()
+                bird.jump()
+        ground.move()
 
-        adicionar_cano = False
-        remover_canos = []
-        for cano in canos:
-            for i, passaro in enumerate(passaros):
-                if cano.colidir(passaro):
-                    passaros.pop(i)
-                    if ai_jogando:
-                        lista_genomas[i].fitness -= 1
-                        lista_genomas.pop(i)
-                        redes_neurais.pop(i)
-                if not cano.passou and passaro.x > cano.x:
-                    cano.passou = True
-                    adicionar_cano = True
+        add_pipe = False
+        remove_pipe = []
+        for pipe in pipes:
+            for i, bird in enumerate(birds):
+                if pipe.collide(bird):
+                    birds.pop(i)
+                    if ai_playing:
+                        list_genomas[i].fitness -= 1
+                        list_genomas.pop(i)
+                        neural_networks.pop(i)
+                if not pipe.passed and bird.x > pipe.x:
+                    pipe.passed = True
+                    add_pipe = True
 
-            cano.mover()
-            if cano.x + cano.CANO_TOPO.get_width() < 0:
-                remover_canos.append(cano)
+            pipe.move()
+            if pipe.x + pipe.PIPE_TOP.get_width() < 0:
+                remove_pipe.append(pipe)
 
-        if adicionar_cano:
-            pontos += 1
-            canos.append(Cano(600))
-            if ai_jogando:
-                for genoma in lista_genomas:
+        if add_pipe:
+            points += 1
+            pipes.append(Pipe(600))
+            if ai_playing:
+                for genoma in list_genomas:
                     genoma.fitness += 5
 
-        for cano in remover_canos:
-            canos.remove(cano)
+        for pipe in remove_pipe:
+            pipes.remove(pipe)
 
-        for i, passaro in enumerate(passaros):
-            if (passaro.y + passaro.imagem.get_height()) > chao.y or passaro.y < 0:
-                passaros.pop(i)
-                if ai_jogando:
-                    lista_genomas.pop(i)
-                    redes_neurais.pop(i)
+        for i, bird in enumerate(birds):
+            if (bird.y + bird.image.get_height()) > ground.y or bird.y < 0:
+                birds.pop(i)
+                if ai_playing:
+                    list_genomas.pop(i)
+                    neural_networks.pop(i)
 
-        desenhar_tela(tela, passaros, canos, chao, pontos)
+        draw_screen(screen, birds, pipes, ground, points)
 
-def rodar(caminho_config):
+def run(path_config):
     config = neat.config.Config(neat.DefaultGenome,
                                 neat.DefaultReproduction,
                                 neat.DefaultSpeciesSet,
                                 neat.DefaultStagnation,
-                                caminho_config)
-    populacao = neat.Population(config)
+                                path_config)
+    population = neat.Population(config)
 
-    populacao.add_reporter(neat.StdOutReporter(True))
-    populacao.add_reporter(neat.StatisticsReporter())
-    if ai_jogando:
-        populacao.run(main, 50)
+    population.add_reporter(neat.StdOutReporter(True))
+    population.add_reporter(neat.StatisticsReporter())
+    if ai_playing:
+        population.run(main, 50)
     else:
         main(None, None)
 
 if __name__ == '__main__':
-    caminho_config = os.path.join('../', 'config.txt')
-    rodar(caminho_config)
+    path_config = os.path.join('../', 'config.txt')
+    run(path_config)

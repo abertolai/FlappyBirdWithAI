@@ -1,28 +1,28 @@
 import pygame
 import os
 
-IMAGEM_CHAO = pygame.transform.scale2x(pygame.image.load(os.path.join('../imgs','base.png')))
+GROUND_IMAGE = pygame.transform.scale2x(pygame.image.load(os.path.join('../imgs', 'base.png')))
 
-class Chao:
-    VELOCIDADE = 5
-    LARGURA = IMAGEM_CHAO.get_width()
-    IMAGEM = IMAGEM_CHAO
+class Ground:
+    SPEED = 5
+    WIDTH = GROUND_IMAGE.get_width()
+    IMAGE = GROUND_IMAGE
 
     def __init__(self, y):
         self.y = y
         self.x1 = 0
-        self.x2 = self.LARGURA
+        self.x2 = self.WIDTH
 
-    def mover(self):
-        self.x1 -= self.VELOCIDADE
-        self.x2 -= self.VELOCIDADE
+    def move(self):
+        self.x1 -= self.SPEED
+        self.x2 -= self.SPEED
 
-        if self.x1 + self.LARGURA < 0:
-            self.x1 = self.x2 + self.LARGURA
+        if self.x1 + self.WIDTH < 0:
+            self.x1 = self.x2 + self.WIDTH
 
-        if self.x2 + self.LARGURA < 0:
-            self.x2 = self.x1 + self.LARGURA
+        if self.x2 + self.WIDTH < 0:
+            self.x2 = self.x1 + self.WIDTH
 
-    def desenhar(self, tela):
-        tela.blit(self.IMAGEM, (self.x1, self.y))
-        tela.blit(self.IMAGEM, (self.x2, self.y))
+    def draw(self, tela):
+        tela.blit(self.IMAGE, (self.x1, self.y))
+        tela.blit(self.IMAGE, (self.x2, self.y))
