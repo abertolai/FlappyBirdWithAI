@@ -6,7 +6,7 @@ Este jogo é um clone do Flappy Bird, um jogo simples e viciante em que o jogado
 
 ## Estrutura da aplicação
 
-A aplicação é dividida em 4 arquivos principais:
+A aplicação é dividida em 4 arquivos principais dentro da pasta **game**:
 
 •*bird.py:* Contém a classe Bird que representa o pássaro no jogo, com seus atributos e métodos para movimento, animação e colisão.
 
@@ -16,15 +16,22 @@ A aplicação é dividida em 4 arquivos principais:
 
 •*main.py:* Este arquivo contém o código principal do jogo, responsável por:
 
-1. *Inicializar o Pygame e carregar as imagens.*
-2. *Definir as constantes do jogo (largura, altura, velocidade, etc.).*
-3. *Criar as instâncias de Bird, Pipe e Ground.*
-4. *Implementar a lógica principal do jogo, incluindo:*
-     * *Movimentação dos objetos.*
-     * *Detecção de colisões.*
-     * *Desenho na tela.*
-     * *Controle da IA (se estiver ativada).*
-     * *Atualização de pontuação.*
+   1. *Inicializar o Pygame e carregar as imagens.*
+   2. *Definir as constantes do jogo (largura, altura, velocidade, etc.).*
+   3. *Criar as instâncias de Bird, Pipe e Ground.*
+   4. *Implementar a lógica principal do jogo, incluindo:*
+        * *Movimentação dos objetos.*
+        * *Detecção de colisões.*
+        * *Desenho na tela.*
+        * *Controle da IA (se estiver ativada).*
+        * *Atualização de pontuação.*
+
+Temos também o arquivo de configuração da inteligência artificial que fica na **raiz do projeto**:
+
+•*config.txt:* Este arquivo é um arquivo de configuração que define as opções de execução para o algoritmo NEAT (NeuroEvolution of Augmenting Topologies) no Python. O arquivo é dividido em duas partes:
+*a parte superior define as opções gerais do algoritmo e a parte inferior que define as opções específicas para cada tipo de rede neural.*
+
+Já a pasta **imgs** contém as imagens para serem utilizadas no jogo.
 
 ## Tecnologias utilizadas
 
