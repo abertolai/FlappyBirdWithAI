@@ -5,7 +5,7 @@ from game.bird import Bird
 from game.pipe import Pipe
 from game.ground import Ground
 
-ai_playing = True
+ai_playing = False
 generation = 0
 
 # Constantes
@@ -93,14 +93,16 @@ def main(genomas, config): #fitness function -> precisa dizer qual bird esta ind
         #mover as coisas
         for i, bird in enumerate(birds):
             bird.move()
-            #aumentar um pouquinho a fitness do bird
-            list_genomas[i].fitness += 0.1
-            output = neural_networks[i].activate((bird.y,
-                                                abs(bird.y - pipes[index_pipe].height),
-                                                abs(bird.y - pipes[index_pipe].pos_base))) #ativa a rede neural
-            # -1 e 1 -> se o output for > 0.5 então o bird pula
-            if output[0] > 0.5:
-                bird.jump()
+
+            if ai_playing:
+                #aumentar um pouquinho a fitness do bird
+                list_genomas[i].fitness += 0.1
+                output = neural_networks[i].activate((bird.y,
+                                                    abs(bird.y - pipes[index_pipe].height),
+                                                    abs(bird.y - pipes[index_pipe].pos_base))) #ativa a rede neural
+                # -1 e 1 -> se o output for > 0.5 então o bird pula
+                if output[0] > 0.5:
+                    bird.jump()
         ground.move()
 
         add_pipe = False
